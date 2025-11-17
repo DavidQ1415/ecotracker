@@ -24,7 +24,7 @@ export default function SurveyLayout({
     if (index > 0) {
       router.push(`/survey/${surveyOrder[index - 1]}`);
     } else {
-      router.push("/survey");
+      router.push("/");
     }
   };
 
