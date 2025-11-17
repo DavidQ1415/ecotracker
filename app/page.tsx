@@ -14,6 +14,12 @@ export default function Home() {
       >
         Get Started
       </Link>
+      <Link
+        href="/auth/signin"
+        className="mt-4 px-6 py-3 rounded-md border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition"
+      >
+        Login
+      </Link>
     </main>
   );
 }
