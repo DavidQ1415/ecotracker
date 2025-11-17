@@ -11,13 +11,13 @@ export default function Home() {
       <div className="flex flex-col gap-4">
         <Link
           href="/survey/consumption"
-          className="px-6 py-3 rounded-md bg-[var(--accent)] text-white hover:opacity-90 transition"
+          className="px-6 py-3 rounded-md bg-[var(--accent)] text-white hover:opacity-90 transition text-center"
         >
           Get Started
         </Link>
         <Link
           href="/auth/signin"
-          className="px-6 py-3 rounded-md bg-[var(--accent)] text-white hover:opacity-90 transition"
+          className="px-6 py-3 rounded-md bg-[var(--accent)] text-white hover:opacity-90 transition text-center"
         >
           Login
         </Link>
