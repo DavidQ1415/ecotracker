@@ -94,17 +94,16 @@ export default function DashboardPage() {
   const CustomTooltip = ({
     active,
     payload,
-    label,
   }: TooltipProps<ValueType, NameType> & {
-    payload?: { value: number }[];
-    label?: string;
+    payload?: Array<{ value: number; payload: { date: string } }>;
   }) => {
     if (active && payload && payload.length) {
       const value = payload[0].value;
+      const date = payload[0].payload?.date;
 
       return (
         <div className="bg-white dark:bg-gray-700 p-3 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
-          <p className="font-semibold mb-1 text-[var(--foreground)]">{`Date: ${label}`}</p>
+          <p className="font-semibold mb-1 text-[var(--foreground)]">{`Date: ${date}`}</p>
           <p className="text-[#2f855a] font-bold text-lg">
             {`Footprint Score: ${value}`}
           </p>
