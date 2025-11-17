@@ -4,12 +4,10 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  TooltipProps
-} from "recharts";
+import { TooltipProps } from "recharts";
 import {
   ValueType,
-  NameType
+  NameType,
 } from "recharts/types/component/DefaultTooltipContent";
 
 import {
@@ -36,6 +34,46 @@ export default function DashboardPage() {
   const router = useRouter();
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState(true);
+  const [savingScore, setSavingScore] = useState(false);
+
+  // Save pending score if exists
+  useEffect(() => {
+    const savePendingScore = async () => {
+      if (status === "authenticated" && !savingScore) {
+        const pendingScore = sessionStorage.getItem("pendingScore");
+
+        if (pendingScore) {
+          setSavingScore(true);
+          console.log("Saving pending score from dashboard:", pendingScore);
+
+          try {
+            const response = await fetch("/api/surveys", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ footprintScore: parseInt(pendingScore) }),
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log("Score saved successfully:", data);
+              sessionStorage.removeItem("pendingScore");
+              // Refresh surveys list to show the new one
+              fetchSurveys();
+            } else {
+              const error = await response.json();
+              console.error("Failed to save score:", error);
+            }
+          } catch (err) {
+            console.error("Error saving score:", err);
+          } finally {
+            setSavingScore(false);
+          }
+        }
+      }
+    };
+
+    savePendingScore();
+  }, [status, savingScore]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -81,7 +119,7 @@ export default function DashboardPage() {
         month: "short",
         day: "numeric",
       }),
-      score: Number(survey.footprintScore), // Ensure it's a number
+      score: Number(survey.footprintScore),
       fullDate: new Date(survey.createdAt),
     }))
     .sort((a, b) => a.fullDate.getTime() - b.fullDate.getTime());
@@ -119,18 +157,23 @@ export default function DashboardPage() {
   const averageScore =
     surveys.length > 0
       ? Math.round(
-        surveys.reduce((sum, s) => sum + s.footprintScore, 0) / surveys.length
-      )
+          surveys.reduce((sum, s) => sum + s.footprintScore, 0) / surveys.length
+        )
       : 0;
   const latestScore = surveys.length > 0 ? surveys[0].footprintScore : 0;
   const bestScore =
-    surveys.length > 0
-      ? Math.min(...surveys.map((s) => s.footprintScore))
-      : 0;
+    surveys.length > 0 ? Math.min(...surveys.map((s) => s.footprintScore)) : 0;
 
   return (
     <div className="min-h-screen bg-[var(--background)] p-6">
       <div className="max-w-7xl mx-auto">
+        {/* Saving indicator */}
+        {savingScore && (
+          <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 rounded">
+            Saving your survey score...
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -225,11 +268,7 @@ export default function DashboardPage() {
                   <YAxis domain={yAxisDomain} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Bar
-                    dataKey="score"
-                    fill="#2f855a"
-                    name="Footprint Score"
-                  />
+                  <Bar dataKey="score" fill="#2f855a" name="Footprint Score" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -282,4 +321,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
