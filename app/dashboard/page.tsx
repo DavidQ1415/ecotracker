@@ -5,6 +5,14 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
+  TooltipProps
+} from "recharts";
+import {
+  ValueType,
+  NameType
+} from "recharts/types/component/DefaultTooltipContent";
+
+import {
   LineChart,
   Line,
   XAxis,
@@ -85,9 +93,17 @@ export default function DashboardPage() {
   const yAxisDomain = [Math.max(0, minScore - 10), maxScore + 10];
 
   // Custom tooltip component
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+    label,
+  }: TooltipProps<ValueType, NameType> & {
+    payload?: { value: number }[];
+    label?: string;
+  }) => {
     if (active && payload && payload.length) {
       const value = payload[0].value;
+
       return (
         <div className="bg-white dark:bg-gray-700 p-3 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
           <p className="font-semibold mb-1 text-[var(--foreground)]">{`Date: ${label}`}</p>
@@ -103,8 +119,8 @@ export default function DashboardPage() {
   const averageScore =
     surveys.length > 0
       ? Math.round(
-          surveys.reduce((sum, s) => sum + s.footprintScore, 0) / surveys.length
-        )
+        surveys.reduce((sum, s) => sum + s.footprintScore, 0) / surveys.length
+      )
       : 0;
   const latestScore = surveys.length > 0 ? surveys[0].footprintScore : 0;
   const bestScore =
