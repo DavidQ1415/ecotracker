@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -54,7 +54,7 @@ export default function SignInPage() {
             console.error("Error saving score:", err);
           }
         }
-        
+
         // Redirect to dashboard
         router.push("/dashboard");
         router.refresh();
@@ -66,70 +66,86 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--background)] px-4">
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-[var(--accent)] mb-6">
-          Sign In
-        </h1>
-        
-        {success && (
-          <div className="mb-4 p-3 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded">
-            Account created successfully! Please sign in.
-          </div>
-        )}
-        
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded">
-            {error}
-          </div>
-        )}
+    <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+      <h1 className="text-3xl font-bold text-center text-[var(--accent)] mb-6">
+        Sign In
+      </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent bg-white dark:bg-gray-700 text-[var(--foreground)]"
-            />
-          </div>
+      {success && (
+        <div className="mb-4 p-3 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded">
+          Account created successfully! Please sign in.
+        </div>
+      )}
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent bg-white dark:bg-gray-700 text-[var(--foreground)]"
-            />
-          </div>
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded">
+          {error}
+        </div>
+      )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-[var(--accent)] text-white rounded-md hover:opacity-90 transition font-semibold disabled:opacity-50"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium mb-2">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent bg-white dark:bg-gray-700 text-[var(--foreground)]"
+          />
+        </div>
 
-        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-          Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="text-[var(--accent)] hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </div>
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium mb-2">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent bg-white dark:bg-gray-700 text-[var(--foreground)]"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 bg-[var(--accent)] text-white rounded-md hover:opacity-90 transition font-semibold disabled:opacity-50"
+        >
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/auth/signup"
+          className="text-[var(--accent)] hover:underline"
+        >
+          Sign up
+        </Link>
+      </p>
     </div>
   );
 }
 
+export default function SignInPage() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[var(--background)] px-4">
+      <Suspense
+        fallback={
+          <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+            <div className="text-center">Loading...</div>
+          </div>
+        }
+      >
+        <SignInForm />
+      </Suspense>
+    </div>
+  );
+}
