@@ -74,13 +74,14 @@ export default function DashboardPage() {
 
   // Format data for charts
   const chartData = surveys
-    .map((survey) => ({
+    .map((survey, index) => ({
       date: new Date(survey.createdAt).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
       score: Number(survey.footprintScore), // Ensure it's a number
       fullDate: new Date(survey.createdAt),
+      uniqueKey: index,
     }))
     .sort((a, b) => a.fullDate.getTime() - b.fullDate.getTime());
 
@@ -91,15 +92,14 @@ export default function DashboardPage() {
   const yAxisDomain = [Math.max(0, minScore - 10), maxScore + 10];
 
   // Custom tooltip component
-  const CustomTooltip = ({
-    active,
-    payload,
-  }: TooltipProps<ValueType, NameType> & {
-    payload?: Array<{ value: number; payload: { date: string } }>;
-  }) => {
-    if (active && payload && payload.length) {
+  const CustomTooltip = (props: any) => {
+    const { active, payload } = props;
+
+    if (active && payload && payload.length > 0) {
+      // Access the entire data object from payload
+      const dataPoint = payload[0].payload as (typeof chartData)[0];
       const value = payload[0].value;
-      const date = payload[0].payload?.date;
+      const date = dataPoint?.date;
 
       return (
         <div className="bg-white dark:bg-gray-700 p-3 border border-gray-300 dark:border-gray-600 rounded shadow-lg">
