@@ -8,18 +8,20 @@ export default function Home() {
         Track your sustainability journey with ease.
       </p>
 
-      <Link
-        href="/survey/consumption"
-        className="px-6 py-3 rounded-md bg-[var(--accent)] text-white hover:opacity-90 transition"
-      >
-        Get Started
-      </Link>
-      <Link
-        href="/auth/signin"
-        className="mt-4 px-6 py-3 rounded-md border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-white transition"
-      >
-        Login
-      </Link>
+      <div className="flex flex-col gap-4">
+        <Link
+          href="/survey/consumption"
+          className="px-6 py-3 rounded-md bg-[var(--accent)] text-white hover:opacity-90 transition"
+        >
+          Get Started
+        </Link>
+        <Link
+          href="/auth/signin"
+          className="px-6 py-3 rounded-md bg-[var(--accent)] text-white hover:opacity-90 transition"
+        >
+          Login
+        </Link>
+      </div>
     </main>
   );
 }
